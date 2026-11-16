@@ -1,0 +1,8 @@
+{
+  "appId": "com.evita.asteranimecharactercreator",
+  "appName": "Aster Anime Creator",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
