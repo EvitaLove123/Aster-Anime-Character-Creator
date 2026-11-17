@@ -8,6 +8,25 @@
 <style>
 :root{--bg:#f7f8fc;--panel:#fff;--ink:#25283a;--muted:#85899d;--line:#e9eaf1;--accent:#8c7cf0;--accent2:#c5baff;--soft:#f0edff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:0}header{height:62px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:16px}.logo{width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,#b9adff,#e6dfff);display:grid;place-items:center;color:#fff;font-size:19px}.top-actions{display:flex;gap:8px}.btn{padding:9px 13px;border-radius:11px;background:var(--soft);color:#6454c6;font-weight:650}.btn.primary{background:var(--accent);color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}.layout{max-width:1400px;margin:auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:16px}.stage-card,.editor{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}.stage-head{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.stage-head strong{font-size:14px}.status{font-size:11px;color:#6d61bd;background:var(--soft);padding:5px 9px;border-radius:20px}.viewport{height:min(72vh,760px);min-height:430px;position:relative;background:radial-gradient(ellipse at 50% 35%,#fff 0,#f5f3ff 55%,#ecebfa 100%);overflow:hidden}.viewport canvas{width:100%;height:100%;display:block}.hint{position:absolute;bottom:12px;left:12px;color:#85849a;background:#ffffffc9;padding:7px 10px;border-radius:10px;font-size:11px;pointer-events:none}.stage-foot{padding:12px 16px;display:flex;justify-content:space-between;gap:8px;align-items:center;color:var(--muted);font-size:12px}.editor{padding:0}.editor-head{padding:16px;border-bottom:1px solid var(--line)}.editor-head h2{font-size:17px;margin:0 0 3px}.editor-head p{margin:0;color:var(--muted);font-size:12px}.tabs{display:flex;gap:5px;padding:10px;border-bottom:1px solid var(--line);overflow-x:auto}.tab{flex:1;min-width:55px;background:transparent;color:var(--muted);padding:9px 6px;border-radius:10px;font-size:12px}.tab.active{background:var(--soft);color:#6655c7;font-weight:700}.controls{padding:14px 16px;min-height:280px}.group-title{font-weight:700;margin:0 0 13px}.control{margin:0 0 18px}.control-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}.control label{font-size:12px;color:#55596e}.value{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}input[type=range]{width:100%;accent-color:var(--accent)}input[type=color]{width:38px;height:30px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:2px}select,input[type=text]{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}.color-row{display:flex;gap:10px;align-items:center}.color-row span{font-size:12px;color:#55596e;flex:1}.editor-actions{border-top:1px solid var(--line);padding:13px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.editor-actions .btn{width:100%}.saved{padding:0 16px 14px}.saved-title{font-weight:700;font-size:12px;margin:2px 0 8px}.saved-list{display:flex;gap:7px;flex-wrap:wrap}.saved-chip{font-size:11px;background:#f4f4f8;padding:6px 9px;border-radius:9px;color:#5f6275}.notice{margin:0 16px 14px;padding:10px 11px;background:#fff9e9;border:1px solid #f4e8c7;color:#8c6b28;border-radius:11px;font-size:11px}.hidden{display:none!important}@media(max-width:850px){.layout{grid-template-columns:1fr;padding:10px;gap:10px}.viewport{height:52vh;min-height:360px}.editor{order:2}.stage-card{order:1}.controls{min-height:0}.tab{min-width:58px}.brand{font-size:14px}.top-actions .btn{padding:8px 9px;font-size:12px}}@media(max-width:390px){header{padding:0 10px}.logo{width:30px;height:30px}.top-actions{gap:4px}.top-actions .btn{font-size:11px;padding:7px}}
+
+.ai-studio{padding:14px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#fbfaff)}
+.ai-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.ai-title strong{font-size:14px}.soon{font-size:10px;font-weight:700;color:#8a6a2d;background:#fff4d9;padding:5px 8px;border-radius:20px}
+.ai-copy{margin:0 0 12px;color:var(--muted);font-size:11px}
+.ai-modes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px}
+.ai-mode{padding:9px 8px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#696d80;font-size:12px;font-weight:650}
+.ai-mode.active{border-color:#bcb1ff;background:var(--soft);color:#6554c5}
+.ai-field-label{display:block;font-size:11px;font-weight:650;color:#55596e;margin:0 0 6px}
+.ai-studio textarea{display:block;width:100%;min-height:76px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:12px;color:var(--ink);background:#fff}
+.ai-meta{display:flex;justify-content:space-between;gap:8px;margin-top:5px;color:var(--muted);font-size:10px}
+.ai-upload{display:flex;align-items:center;justify-content:center;min-height:86px;border:1px dashed #c9c3e8;border-radius:12px;background:#fff;overflow:hidden;text-align:center;padding:10px;color:#77718f;font-size:11px}
+.ai-upload img{display:block;max-width:100%;max-height:150px;object-fit:contain;border-radius:8px}
+.ai-upload input{display:none}
+.ai-actions{display:flex;gap:8px;margin-top:10px}
+.ai-actions .btn{flex:1}
+.ai-state{margin:9px 0 0;padding:9px 10px;border-radius:10px;background:#f4f2ff;color:#69618e;font-size:10px}
+.ai-state strong{color:#5f50b7}
+
 </style>
 </head>
 <body>
@@ -15,6 +34,15 @@
 <main class="layout">
 <section class="stage-card"><div class="stage-head"><strong>Character Preview</strong><span class="status">3D PROTOTYPE · VRM 0.x TARGET</span></div><div class="viewport" id="viewport"><div class="hint">Kéo để xoay · Chụm để zoom</div></div><div class="stage-foot"><span>Preview được dựng trực tiếp trong trình duyệt</span><span id="renderStatus">Đang khởi tạo…</span></div></section>
 <aside class="editor"><div class="editor-head"><h2>Character Maker</h2><p>Tạo nhân vật anime mới từ các tùy chỉnh cơ bản.</p></div>
+<section class="ai-studio" aria-label="AI character generator">
+ <div class="ai-title"><strong>AI Character Generator</strong><span class="soon">COMING SOON</span></div>
+ <p class="ai-copy">Tạo nhân vật 3D từ mô tả hoặc ảnh tham chiếu OC.</p>
+ <div class="ai-modes"><button class="ai-mode active" type="button" data-ai-mode="text">✦ Text to 3D</button><button class="ai-mode" type="button" data-ai-mode="image">▧ Image to 3D</button></div>
+ <div id="aiTextPane"><label class="ai-field-label" for="aiPrompt">Mô tả nhân vật</label><textarea id="aiPrompt" maxlength="1024" placeholder="Ví dụ: anime fantasy girl, long silver hair, ice-blue eyes, white winter outfit..."></textarea><div class="ai-meta"><span>Tối đa 1.024 ký tự</span><span id="promptCount">0 / 1024</span></div></div>
+ <div id="aiImagePane" class="hidden"><span class="ai-field-label">Ảnh tham chiếu OC</span><label class="ai-upload" for="aiImageInput" id="aiUploadLabel"><span>Chạm để chọn ảnh PNG, JPG hoặc WebP<br/>Tối đa 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp"></label><div class="ai-meta"><span id="imageMeta">Chưa chọn ảnh</span><button type="button" class="btn hidden" id="clearImage" style="padding:3px 7px;font-size:10px">Xóa ảnh</button></div></div>
+ <div class="ai-actions"><button type="button" class="btn primary" id="generateBtn">Generate 3D</button></div>
+ <div class="ai-state" id="aiState"><strong>Chưa kết nối dịch vụ AI.</strong> Giao diện đã sẵn sàng; chức năng tạo model thật sẽ được bật sau khi có dịch vụ máy chủ được triển khai. Không cần nhập API key.</div>
+</section>
 <nav class="tabs"><button class="tab active" data-tab="face">Face</button><button class="tab" data-tab="hair">Hair</button><button class="tab" data-tab="body">Body</button><button class="tab" data-tab="outfit">Outfit</button><button class="tab" data-tab="extra">Extra</button></nav>
 <div class="controls" id="controls"></div>
 <div class="notice">Bản đầu tiên: preview 3D procedural và tùy chỉnh cơ bản. Thư viện mesh, rig humanoid, blendshape và bộ xuất VRM 0.x chưa được triển khai; nút Export sẽ chỉ mở khi exporter thật sẵn sàng.</div>
@@ -87,6 +115,46 @@ else if(type==='toggle'){input=document.createElement('button');input.className=
 else{input=document.createElement('input');input.type='range';input.min=min;input.max=max;input.step=step;input.value=state[key];val.textContent=Number(state[key]).toFixed(2);input.oninput=()=>{state[key]=Number(input.value);val.textContent=state[key].toFixed(2);buildAvatar()}}
 wrap.append(input);c.append(wrap)}
 }
+
+let aiMode='text', selectedImage=null, selectedImageUrl=null;
+const aiPrompt=$('#aiPrompt'), promptCount=$('#promptCount');
+aiPrompt.addEventListener('input',()=>{promptCount.textContent=aiPrompt.value.length+' / 1024'});
+document.querySelectorAll('[data-ai-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+ aiMode=btn.dataset.aiMode;
+ document.querySelectorAll('[data-ai-mode]').forEach(x=>x.classList.toggle('active',x===btn));
+ $('#aiTextPane').classList.toggle('hidden',aiMode!=='text');
+ $('#aiImagePane').classList.toggle('hidden',aiMode!=='image');
+ $('#generateBtn').textContent=aiMode==='text'?'Generate 3D':'Generate from Image';
+}));
+$('#aiImageInput').addEventListener('change',e=>{
+ const file=e.target.files?.[0]; if(!file)return;
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)){alert('Chỉ hỗ trợ PNG, JPG hoặc WebP.');e.target.value='';return}
+ if(file.size>20*1024*1024){alert('Ảnh vượt quá giới hạn 20 MB.');e.target.value='';return}
+ if(selectedImageUrl)URL.revokeObjectURL(selectedImageUrl);
+ selectedImage=file; selectedImageUrl=URL.createObjectURL(file);
+ const label=$('#aiUploadLabel');label.innerHTML='';const img=document.createElement('img');img.src=selectedImageUrl;img.alt='Ảnh OC đã chọn';label.append(img);
+ $('#imageMeta').textContent=file.name+' · '+(file.size/1024/1024).toFixed(1)+' MB';$('#clearImage').classList.remove('hidden');
+});
+$('#clearImage').addEventListener('click',()=>{
+ selectedImage=null;$('#aiImageInput').value='';if(selectedImageUrl)URL.revokeObjectURL(selectedImageUrl);selectedImageUrl=null;
+ $('#aiUploadLabel').innerHTML='<span>Chạm để chọn ảnh PNG, JPG hoặc WebP<br/>Tối đa 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp">';
+ // Rebind the replacement input so image selection remains usable.
+ $('#aiImageInput').addEventListener('change',e=>handleAiImage(e));
+ $('#imageMeta').textContent='Chưa chọn ảnh';$('#clearImage').classList.add('hidden');
+});
+function handleAiImage(e){
+ const file=e.target.files?.[0];if(!file)return;
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>20*1024*1024){alert('Vui lòng chọn PNG, JPG hoặc WebP tối đa 20 MB.');e.target.value='';return}
+ if(selectedImageUrl)URL.revokeObjectURL(selectedImageUrl);selectedImage=file;selectedImageUrl=URL.createObjectURL(file);
+ const label=$('#aiUploadLabel');label.innerHTML='';const img=document.createElement('img');img.src=selectedImageUrl;img.alt='Ảnh OC đã chọn';label.append(img);
+ $('#imageMeta').textContent=file.name+' · '+(file.size/1024/1024).toFixed(1)+' MB';$('#clearImage').classList.remove('hidden');
+}
+$('#generateBtn').addEventListener('click',()=>{
+ const valid=aiMode==='text'?aiPrompt.value.trim().length>0:!!selectedImage;
+ if(!valid){$('#aiState').textContent=aiMode==='text'?'Hãy nhập mô tả nhân vật trước.':'Hãy chọn ảnh OC trước.';return}
+ $('#aiState').innerHTML='<strong>Đã nhận đầu vào.</strong> Dịch vụ AI tạo model chưa được triển khai, nên Aster chưa thể tạo model thật hoặc tải VRM. Dữ liệu của em vẫn chỉ nằm trong trình duyệt ở bước này.';
+});
+
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');active=b.dataset.tab;renderControls()});
 function reset(){state={...defaults};buildAvatar();renderControls()}
 $('#resetBtn').onclick=reset;$('#newBtn').onclick=()=>{reset();$('#renderStatus').textContent='Nhân vật mới'};
