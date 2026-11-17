@@ -9,6 +9,7 @@ Android-first browser-based 3D anime character creator, inspired by the accessib
 - Procedural placeholder character assembled in the browser.
 - Save and reload character presets using browser local storage.
 - Responsive light UI for Android screens.
+- AI generation interface prototype with Text to 3D / Image to 3D modes, prompt input, image selection, and input validation.
 
 ## Project scope
 
@@ -42,6 +43,6 @@ The next major feature is a provider-independent, managed AI generation workflow
 - Hosted rig-check + biped auto-rig
 - Aster custom VRM 0.x packaging and validation
 
-The app should not ask users to create API keys or configure services. Provider credentials and generation costs must be handled privately by the managed service. A generated GLB is only an intermediate model; Aster must implement its own VRM 0.x exporter. The AI generator and VRM exporter are not live yet.
+The app should not ask users to create API keys or configure services. Provider credentials and generation costs must be handled privately by the managed service. A generated GLB is only an intermediate model; Aster must implement its own VRM 0.x exporter. The AI generator interface is now present, but its Generate action is intentionally marked as unavailable until a managed generation service is deployed. It does not create a 3D model yet. The VRM exporter is also not implemented.
 
 See [AI to VRM pipeline](docs/AI_TO_VRM_PIPELINE.md) for the architecture, validation requirements, and current limitations.
