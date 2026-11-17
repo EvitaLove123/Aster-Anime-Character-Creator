@@ -5,9 +5,15 @@ import { SkeletonHelper } from "three";
 const $ = (selector) => document.querySelector(selector);
 const viewport = $("#viewport");
 const status = $("#status");
-const state = { showSkeleton: false, showGrid: true, colors: { skin: "#f1cdbf", hair: "#d8c18d", outfit: "#aaa0e8", eyes: "#78a9e8", accent: "#e9a9c7" } };
+const state = {
+  showSkeleton: false, showGrid: true,
+  colors: { skin: "#f1cdbf", hair: "#d8c18d", outfit: "#aaa0e8", eyes: "#78a9e8", accent: "#e9a9c7" },
+  anatomy: { bust: 1, waist: 1, hips: 1, thighs: 1, shoulders: 1 },
+  texture: { detail: 35, freckles: false, shading: true }
+};
 
 let scene, camera, renderer, orbit, avatar, skeleton, skeletonHelper, grid;
+let skinMaterial = null;
 const partMeshes = new Map();
 const boneByName = new Map();
 
@@ -35,6 +41,7 @@ function addPart(name, geometry, mat, boneA, boneB = boneA, blend = null) {
   geometry.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(indices, 4));
   geometry.setAttribute("skinWeight", new THREE.Float32BufferAttribute(weights, 4));
   const mesh = new THREE.SkinnedMesh(geometry, mat);
+  mesh.userData.basePositions = Float32Array.from(geometry.getAttribute("position").array);
   mesh.name = name;
   mesh.castShadow = true;
   mesh.receiveShadow = true;
@@ -105,6 +112,75 @@ function boneIndex(name) {
 function addWeightedSphere(name, coords, mat, a, b = a, blend = null, scale = [1, 1, 1]) {
   return addPart(name, sphereGeometry(...coords, ...scale), mat, boneIndex(a), boneIndex(b), blend);
 }
+function makeSkinTexture() {
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const image = ctx.createImageData(size, size);
+  const detail = state.texture.detail / 100;
+  for (let i = 0; i < image.data.length; i += 4) {
+    const grain = (Math.random() - 0.5) * 18 * detail;
+    image.data[i] = 238 + grain;
+    image.data[i + 1] = 202 + grain;
+    image.data[i + 2] = 188 + grain;
+    image.data[i + 3] = 255;
+  }
+  ctx.putImageData(image, 0, 0);
+  if (state.texture.shading) {
+    const shade = ctx.createLinearGradient(0, 0, size, size);
+    shade.addColorStop(0, "rgba(255,255,255,0.16)");
+    shade.addColorStop(0.48, "rgba(255,255,255,0)");
+    shade.addColorStop(1, "rgba(117,69,78,0.13)");
+    ctx.fillStyle = shade;
+    ctx.fillRect(0, 0, size, size);
+  }
+  if (state.texture.freckles) {
+    ctx.fillStyle = "rgba(139,78,66,0.42)";
+    for (let i = 0; i < 420; i++) {
+      const x = Math.random() * size, y = Math.random() * size;
+      const radius = 0.45 + Math.random() * 1.15;
+      ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  if (detail > 0) {
+    ctx.fillStyle = "rgba(130,91,82,0.20)";
+    for (let i = 0; i < Math.floor(1800 * detail); i++) {
+      const x = Math.random() * size, y = Math.random() * size;
+      ctx.fillRect(x, y, 0.7 + detail, 0.7 + detail);
+    }
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(1, 1);
+  return texture;
+}
+function applyAnatomy() {
+  for (const [name, mesh] of partMeshes) {
+    const attr = mesh.geometry.getAttribute("position");
+    const base = mesh.userData.basePositions;
+    for (let i = 0; i < attr.count; i++) {
+      const x = base[i * 3], y = base[i * 3 + 1], z = base[i * 3 + 2];
+      let factor = 1;
+      if (name === "body-torso" || name === "outfit-top") {
+        const waistBand = THREE.MathUtils.smoothstep(y, 1.30, 1.49);
+        const bustBand = THREE.MathUtils.smoothstep(y, 1.53, 1.78);
+        const shoulderBand = THREE.MathUtils.smoothstep(y, 1.76, 1.91);
+        factor *= THREE.MathUtils.lerp(1, state.anatomy.waist, waistBand * (1 - bustBand));
+        factor *= THREE.MathUtils.lerp(1, state.anatomy.bust, bustBand * (1 - shoulderBand));
+        factor *= THREE.MathUtils.lerp(1, state.anatomy.shoulders, shoulderBand);
+      } else if (name === "body-pelvis" || name === "outfit-skirt" || name === "outfit-waist-band") {
+        factor *= state.anatomy.hips;
+      } else if (name.startsWith("leg-") && name.includes("-upper")) {
+        factor *= state.anatomy.thighs;
+      }
+      attr.setXYZ(i, x * factor, y, z * factor);
+    }
+    attr.needsUpdate = true;
+    mesh.geometry.computeVertexNormals();
+  }
+}
 function buildFemaleCharacter() {
   if (skeletonHelper) {
     scene.remove(skeletonHelper);
@@ -124,6 +200,9 @@ function buildFemaleCharacter() {
   buildRig();
 
   const skin = material(state.colors.skin);
+  skin.map = makeSkinTexture();
+  skin.needsUpdate = true;
+  skinMaterial = skin;
   const hair = material(state.colors.hair);
   const outfit = material(state.colors.outfit);
   const eye = material(state.colors.eyes, 0.3);
@@ -194,6 +273,7 @@ function buildFemaleCharacter() {
   skeletonHelper.visible = state.showSkeleton;
   scene.add(skeletonHelper);
   updatePartVisibility();
+  applyAnatomy();
 }
 function updatePartVisibility() {
   for (const [name, mesh] of partMeshes) {
@@ -302,6 +382,31 @@ function setColor(key, value) {
   state.colors[key] = value;
   buildFemaleCharacter();
 }
+function bindCustomization() {
+  document.querySelectorAll("[data-anatomy]").forEach((input) => {
+    const key = input.dataset.anatomy;
+    input.addEventListener("input", () => {
+      state.anatomy[key] = Number(input.value);
+      const output = document.querySelector("#v-" + key);
+      if (output) output.value = Number(input.value).toFixed(2) + "×";
+      applyAnatomy();
+    });
+  });
+  const detail = $("#texture-detail");
+  detail.addEventListener("input", () => {
+    state.texture.detail = Number(detail.value);
+    $("#v-detail").value = detail.value + "%";
+    buildFemaleCharacter();
+  });
+  $("#texture-freckles").addEventListener("change", (event) => {
+    state.texture.freckles = event.target.checked;
+    buildFemaleCharacter();
+  });
+  $("#texture-shading").addEventListener("change", (event) => {
+    state.texture.shading = event.target.checked;
+    buildFemaleCharacter();
+  });
+}
 function bindUI() {
   document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
   $("#reset-camera").addEventListener("click", () => setView("threequarter"));
@@ -316,7 +421,12 @@ function bindUI() {
   });
   $("#reset-character").addEventListener("click", () => {
     state.colors = { skin: "#f1cdbf", hair: "#d8c18d", outfit: "#aaa0e8", eyes: "#78a9e8", accent: "#e9a9c7" };
+    state.anatomy = { bust: 1, waist: 1, hips: 1, thighs: 1, shoulders: 1 };
+    state.texture = { detail: 35, freckles: false, shading: true };
     document.querySelectorAll("[data-color]").forEach((input) => input.value = state.colors[input.dataset.color]);
+    document.querySelectorAll("[data-anatomy]").forEach((input) => { input.value = 1; document.querySelector("#v-" + input.dataset.anatomy).value = "1.00×"; });
+    $("#texture-detail").value = 35; $("#v-detail").value = "35%";
+    $("#texture-freckles").checked = false; $("#texture-shading").checked = true;
     buildFemaleCharacter();
     status.textContent = "Đã khôi phục base character";
   });
@@ -326,6 +436,7 @@ try {
   buildFemaleCharacter();
   buildPartsPanel();
   bindUI();
+  bindCustomization();
   status.textContent = "Female Base Mesh · Modular Rig";
 } catch (error) {
   console.error(error);
