@@ -14,6 +14,7 @@ const state = {
 
 let scene, camera, renderer, orbit, avatar, skeleton, skeletonHelper, grid;
 let skinMaterial = null;
+let uploadedSkinImage = null;
 const partMeshes = new Map();
 const boneByName = new Map();
 
@@ -113,6 +114,13 @@ function addWeightedSphere(name, coords, mat, a, b = a, blend = null, scale = [1
   return addPart(name, sphereGeometry(...coords, ...scale), mat, boneIndex(a), boneIndex(b), blend);
 }
 function makeSkinTexture() {
+  if (uploadedSkinImage) {
+    const imported = new THREE.Texture(uploadedSkinImage);
+    imported.colorSpace = THREE.SRGBColorSpace;
+    imported.wrapS = imported.wrapT = THREE.RepeatWrapping;
+    imported.needsUpdate = true;
+    return imported;
+  }
   const size = 512;
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = size;
@@ -404,6 +412,34 @@ function bindCustomization() {
     $("#v-detail").value = detail.value + "%";
   });
   detail.addEventListener("change", buildFemaleCharacter);
+  $("#skin-texture-file").addEventListener("change", (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (file.size > 12 * 1024 * 1024) {
+      status.textContent = "Texture quá lớn — giới hạn 12 MB";
+      event.target.value = "";
+      return;
+    }
+    const objectUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      uploadedSkinImage = image;
+      buildFemaleCharacter();
+      status.textContent = "Đã áp dụng skin texture cục bộ";
+      URL.revokeObjectURL(objectUrl);
+    };
+    image.onerror = () => {
+      status.textContent = "Không đọc được texture — hãy thử PNG/JPG/WebP";
+      URL.revokeObjectURL(objectUrl);
+    };
+    image.src = objectUrl;
+  });
+  $("#reset-skin-texture").addEventListener("click", () => {
+    uploadedSkinImage = null;
+    $("#skin-texture-file").value = "";
+    buildFemaleCharacter();
+    status.textContent = "Đã chuyển về procedural skin texture";
+  });
   $("#texture-freckles").addEventListener("change", (event) => {
     state.texture.freckles = event.target.checked;
     buildFemaleCharacter();
