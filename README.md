@@ -42,3 +42,17 @@ Open the GitHub Pages site in a modern browser with WebGL enabled. Three.js is l
 ## Development
 
 The app is a static site. No build step is required. Main source: `src/main.js`.
+
+
+## Phase 1.1 — Body Customization prototype
+
+Implemented on the feature branch:
+- Adult-base anatomy controls for chest volume, waist width, hip width, thigh volume, and shoulder width.
+- Procedural vertex deformation on the existing modular torso, pelvis, skirt, and upper-leg meshes.
+- Procedural skin texture preview with surface-detail intensity, freckles toggle, and soft-shading toggle.
+- All controls run locally in the browser; no character model or texture is uploaded.
+
+Limitations:
+- These are broad proportion controls, not sculpt-grade anatomy or a Koikatsu-equivalent texture library.
+- The generated texture is a procedural preview, not a hand-painted high-resolution body atlas.
+- Texture import, layer painting, region masks, detailed anatomy morph targets, clothing refitting, and VRM 0.x export remain future work.
