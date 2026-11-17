@@ -54,4 +54,4 @@ Test exports in VRM Posing Mobile, Virtual Droid, and Napharmonia. Report compat
 
 ## Current status
 
-This document describes the target architecture only. The current prototype does not yet have a live managed AI generation service, production character rigging, or a working VRM 0.x exporter. Keep those limitations visible until each feature is implemented and verified.
+This document describes the target architecture. The frontend now includes a first AI workflow UI prototype: Text to 3D / Image to 3D mode switching, prompt entry, local image selection and preview, and basic input validation. The Generate action does not call an AI service and explicitly reports that generation is unavailable. The project still has no live managed AI generation service, production character rigging, or working VRM 0.x exporter. Keep those limitations visible until each feature is implemented and verified.
