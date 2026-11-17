@@ -190,7 +190,13 @@ function buildFemaleCharacter() {
     scene.remove(avatar);
     avatar.traverse((o) => {
       if (o.geometry) o.geometry.dispose();
-      if (o.material && !Array.isArray(o.material)) o.material.dispose();
+      if (o.material) {
+        const materials = Array.isArray(o.material) ? o.material : [o.material];
+        for (const mat of materials) {
+          if (mat.map) mat.map.dispose();
+          mat.dispose();
+        }
+      }
     });
   }
   avatar = new THREE.Group();
@@ -396,8 +402,8 @@ function bindCustomization() {
   detail.addEventListener("input", () => {
     state.texture.detail = Number(detail.value);
     $("#v-detail").value = detail.value + "%";
-    buildFemaleCharacter();
   });
+  detail.addEventListener("change", buildFemaleCharacter);
   $("#texture-freckles").addEventListener("change", (event) => {
     state.texture.freckles = event.target.checked;
     buildFemaleCharacter();
