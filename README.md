@@ -15,7 +15,7 @@ Android-first browser-based 3D anime character creator, inspired by the accessib
 - Create new characters only.
 - Target export format: **VRM 0.x only**.
 - No PMX, FBX, GLB, or glTF model import workflow.
-- No AI image-to-character reconstruction.
+- AI image/text-to-3D generation is a planned feature, not live yet.
 - No UniVRM.
 
 ## Not implemented yet
@@ -36,12 +36,12 @@ Open the GitHub Pages site in a modern browser with WebGL enabled. Three.js is c
 
 ## AI Image/Text-to-VRM roadmap
 
-The next major feature is an in-app Tripo-powered workflow:
+The next major feature is a provider-independent, managed AI generation workflow:
 - Text prompt → 3D character
 - Reference image → 3D character
-- Tripo rig-check + biped auto-rig
+- Hosted rig-check + biped auto-rig
 - Aster custom VRM 0.x packaging and validation
 
-**Important:** Tripo does not list VRM as a direct model-conversion output. It supplies an intermediate 3D model (such as GLB); Aster must implement its own VRM 0.x exporter. Tripo API credentials must stay on a server-side proxy and must never be embedded in the GitHub Pages frontend.
+The app should not ask users to create API keys or configure services. Provider credentials and generation costs must be handled privately by the managed service. A generated GLB is only an intermediate model; Aster must implement its own VRM 0.x exporter. The AI generator and VRM exporter are not live yet.
 
-See [AI to VRM pipeline](docs/AI_TO_VRM_PIPELINE.md) for the architecture, validation requirements, and deployment boundary. This roadmap is not yet an implemented working AI generator or VRM exporter.
+See [AI to VRM pipeline](docs/AI_TO_VRM_PIPELINE.md) for the architecture, validation requirements, and current limitations.
