@@ -2,53 +2,56 @@
 
 ## Product goal
 
-Add an in-app AI character generation workflow inspired by Tripo:
-- Text prompt -> 3D character
-- Reference image -> 3D character
-- Preview and inspect the generated model
-- Check and create a biped humanoid rig
-- Convert the result into a validated VRM 0.x file using Aster's own exporter
+The user experience must be simple:
+1. Choose **Text to 3D** or **Image to 3D**.
+2. Enter a prompt or select an OC image.
+3. Tap **Generate** and preview the 3D character.
+4. Tap **Export VRM 0.x** after the model passes validation.
 
-This is a pipeline target, not a claim that the current prototype already exports VRM.
+The user must not be asked to create API keys, edit JSON, configure environment variables, or paste credentials into the app.
 
-## Proposed pipeline
+## Product architecture
 
-1. The Android-friendly web UI collects a prompt or a PNG/JPEG/WebP reference image.
-2. A secure server-side API proxy calls Tripo API v3. The Tripo API key must be stored as a server environment variable (TRIPO_API_KEY), never in index.html, browser storage, or Git.
-3. Tripo creates a model asynchronously. The app polls the task endpoint and downloads the GLB promptly because Tripo model URLs are temporary.
-4. The app submits the generated task to rig-check. Continue only when the result is riggable and reports a biped rig.
-5. Request Tripo Auto Rig, then retrieve the rigged model.
-6. Aster imports the rigged GLB, maps and validates the humanoid skeleton, checks skin weights and materials, and prepares VRM 0.x metadata.
-7. Aster's custom VRM 0.x exporter writes the VRM file. It must not use UniVRM or fabricate UniGLTF/UniVRM metadata.
+- Keep the Android-first GitHub Pages frontend as the user-facing app.
+- The frontend talks to one managed generation service. Provider credentials stay on that service and are never exposed to the browser, local storage, repository, or user.
+- The service can use a 3D generation provider such as Tripo behind the scenes, but the frontend should not be tightly coupled to a provider-specific API.
+- The service handles generation tasks, progress polling, temporary model downloads, rig-check, and biped auto-rig.
+- Aster imports the rigged model, maps and validates the humanoid skeleton, then uses Aster's own custom VRM 0.x exporter.
+- The user sees one Generate flow, not provider setup screens.
 
-## Important technical boundary
+## Important operational constraint
 
-Tripo's documented model conversion formats include GLTF, FBX, USDZ, OBJ, STL and 3MF; VRM is not listed as a direct export format. Therefore Aster must perform the VRM packaging and validation itself. A GLB download is only an intermediate asset, not a VRM file.
+Removing API setup from the user's experience does not make AI generation infrastructure-free. A hosted service still needs a provider account, private credentials, compute/credits, rate limits, and ongoing hosting. Those are service-owner responsibilities, not settings the user should have to manage. Do not claim that generation is live until a managed service is actually deployed and tested.
+
+If no managed service is available yet, show the feature as **Coming soon** or clearly disabled. Do not present a fake Generate button or a mock result as real AI generation.
+
+## 3D-to-VRM boundary
+
+Tripo's documented model conversion formats include GLTF, FBX, USDZ, OBJ, STL and 3MF; VRM is not listed as a direct export format. A generated GLB is only an intermediate model. Aster must implement its own VRM 0.x packaging and validation.
+
+No UniVRM. Do not fabricate UniGLTF/UniVRM metadata or claim compatibility without testing.
 
 ## Android-first UX
 
 - Keep the existing light theme and touch-friendly layout.
-- Offer two clear modes: Text to VRM and Image to VRM.
-- Show generation/rigging progress and actionable errors.
-- Preview the generated 3D asset before export.
-- Do not require users to edit JSON or expose API keys.
-- Keep model processing client-side where practical; use the server only as a secure Tripo API proxy.
+- Two simple modes: **Text to 3D** and **Image to 3D**.
+- Show generation and rigging progress with clear error messages.
+- Preview the generated model before export.
+- Never ask the user to enter provider credentials.
+- Keep model processing client-side where practical; use the managed service only for tasks that require hosted AI generation.
 
-## Compatibility and validation
+## Export validation
 
-A successful Tripo generation or rigging task does not guarantee a valid VRM. Before enabling Download VRM 0.x, Aster must validate:
-- humanoid bone mapping and required bones
-- skeleton hierarchy and bind pose
-- skinning and mesh/material references
+A successful generation or rigging task does not guarantee a valid VRM. Before enabling Download VRM 0.x, validate:
+- required humanoid bone mapping and skeleton hierarchy
+- bind pose and skin weights
+- mesh and material references
 - VRM 0.x metadata and material properties
 - expression/blendshape bindings where present
 - secondary bone groups and colliders where present
 
-Test exported files in VRM Posing Mobile, Virtual Droid, and Napharmonia. Compatibility must be reported per app; do not claim support before testing.
+Test exports in VRM Posing Mobile, Virtual Droid, and Napharmonia. Report compatibility per app; do not claim support before testing.
 
-## Required secrets and deployment
+## Current status
 
-- TRIPO_API_KEY: server-side environment variable only.
-- The current GitHub Pages static site cannot safely hold this secret or directly provide a private API proxy.
-- Deploy the proxy as a serverless backend (for example, a Vercel Function) and configure the frontend with its public API base URL.
-- Do not commit credentials, generated private models, or user-uploaded reference images.
+This document describes the target architecture only. The current prototype does not yet have a live managed AI generation service, production character rigging, or a working VRM 0.x exporter. Keep those limitations visible until each feature is implemented and verified.
