@@ -106,6 +106,10 @@ function addWeightedSphere(name, coords, mat, a, b = a, blend = null, scale = [1
   return addPart(name, sphereGeometry(...coords, ...scale), mat, boneIndex(a), boneIndex(b), blend);
 }
 function buildFemaleCharacter() {
+  if (skeletonHelper) {
+    scene.remove(skeletonHelper);
+    skeletonHelper = null;
+  }
   if (avatar) {
     scene.remove(avatar);
     avatar.traverse((o) => {
@@ -193,7 +197,12 @@ function buildFemaleCharacter() {
 }
 function updatePartVisibility() {
   for (const [name, mesh] of partMeshes) {
-    const key = name.split("-")[0];
+    let key = "head";
+    if (name.startsWith("hair-") || name.startsWith("side-hair-") || name.startsWith("fringe-")) key = "hair";
+    else if (name.startsWith("body-") || name === "neck") key = "body";
+    else if (name.startsWith("arm-") || name.startsWith("hand-") || name.startsWith("finger-")) key = "arm";
+    else if (name.startsWith("leg-") || name.startsWith("shoe-")) key = "leg";
+    else if (name.startsWith("outfit-")) key = "outfit";
     const input = document.querySelector('[data-part="' + key + '"]');
     mesh.visible = input ? input.checked : true;
   }
