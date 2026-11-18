@@ -10,6 +10,7 @@ Android-first browser-based 3D anime character creator, inspired by the accessib
 - Save and reload character presets using browser local storage.
 - Responsive light UI for Android screens.
 - AI generation interface prototype with Text to 3D / Image to 3D modes, prompt input, image selection, and input validation.
+- AI prompt/mode draft autosave and restore in browser local storage, with a clear-draft action.
 
 ## Project scope
 
