@@ -42,6 +42,7 @@
  <div id="aiImagePane" class="hidden"><span class="ai-field-label">Ảnh tham chiếu OC</span><label class="ai-upload" for="aiImageInput" id="aiUploadLabel"><span>Chạm để chọn ảnh PNG, JPG hoặc WebP<br/>Tối đa 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp"></label><div class="ai-meta"><span id="imageMeta">Chưa chọn ảnh</span><button type="button" class="btn hidden" id="clearImage" style="padding:3px 7px;font-size:10px">Xóa ảnh</button></div></div>
  <div class="ai-actions"><button type="button" class="btn primary" id="generateBtn">Generate 3D</button></div>
  <div class="ai-state" id="aiState"><strong>Chưa kết nối dịch vụ AI.</strong> Giao diện đã sẵn sàng; chức năng tạo model thật sẽ được bật sau khi có dịch vụ máy chủ được triển khai. Không cần nhập API key.</div>
+ <div class="ai-meta" style="align-items:center;margin-top:8px"><span id="draftStatus">Bản nháp sẽ tự lưu trên thiết bị.</span><button type="button" class="btn" id="clearDraft" style="padding:4px 8px;font-size:10px">Xóa bản nháp</button></div>
 </section>
 <nav class="tabs"><button class="tab active" data-tab="face">Face</button><button class="tab" data-tab="hair">Hair</button><button class="tab" data-tab="body">Body</button><button class="tab" data-tab="outfit">Outfit</button><button class="tab" data-tab="extra">Extra</button></nav>
 <div class="controls" id="controls"></div>
@@ -118,13 +119,43 @@ wrap.append(input);c.append(wrap)}
 
 let aiMode='text', selectedImage=null, selectedImageUrl=null;
 const aiPrompt=$('#aiPrompt'), promptCount=$('#promptCount');
-aiPrompt.addEventListener('input',()=>{promptCount.textContent=aiPrompt.value.length+' / 1024'});
+const draftKey='aster-ai-generator-draft-v1';
+function saveAiDraft(){
+ try{
+  localStorage.setItem(draftKey,JSON.stringify({prompt:aiPrompt.value,mode:aiMode,updatedAt:Date.now()}));
+  $('#draftStatus').textContent='Đã tự lưu bản nháp trên thiết bị.';
+ }catch(e){$('#draftStatus').textContent='Không thể lưu bản nháp: bộ nhớ trình duyệt không khả dụng.'}
+}
+function restoreAiDraft(){
+ try{
+  const draft=JSON.parse(localStorage.getItem(draftKey)||'null');
+  if(!draft)return;
+  aiPrompt.value=typeof draft.prompt==='string'?draft.prompt.slice(0,1024):'';
+  aiMode=draft.mode==='image'?'image':'text';
+  document.querySelectorAll('[data-ai-mode]').forEach(x=>x.classList.toggle('active',x.dataset.aiMode===aiMode));
+  $('#aiTextPane').classList.toggle('hidden',aiMode!=='text');
+  $('#aiImagePane').classList.toggle('hidden',aiMode!=='image');
+  $('#generateBtn').textContent=aiMode==='text'?'Generate 3D':'Generate from Image';
+  $('#draftStatus').textContent='Đã khôi phục bản nháp gần nhất. Ảnh cần chọn lại sau khi tải lại trang.';
+ }catch(e){$('#draftStatus').textContent='Không đọc được bản nháp cũ.'}
+}
+restoreAiDraft();
+promptCount.textContent=aiPrompt.value.length+' / 1024';
+aiPrompt.addEventListener('input',()=>{promptCount.textContent=aiPrompt.value.length+' / 1024';saveAiDraft()});
+$('#clearDraft').addEventListener('click',()=>{
+ aiPrompt.value='';aiMode='text';localStorage.removeItem(draftKey);
+ document.querySelectorAll('[data-ai-mode]').forEach(x=>x.classList.toggle('active',x.dataset.aiMode==='text'));
+ $('#aiTextPane').classList.remove('hidden');$('#aiImagePane').classList.add('hidden');
+ $('#generateBtn').textContent='Generate 3D';promptCount.textContent='0 / 1024';
+ $('#draftStatus').textContent='Bản nháp đã được xóa.';
+});
 document.querySelectorAll('[data-ai-mode]').forEach(btn=>btn.addEventListener('click',()=>{
  aiMode=btn.dataset.aiMode;
  document.querySelectorAll('[data-ai-mode]').forEach(x=>x.classList.toggle('active',x===btn));
  $('#aiTextPane').classList.toggle('hidden',aiMode!=='text');
  $('#aiImagePane').classList.toggle('hidden',aiMode!=='image');
  $('#generateBtn').textContent=aiMode==='text'?'Generate 3D':'Generate from Image';
+ saveAiDraft();
 }));
 $('#aiImageInput').addEventListener('change',e=>{
  const file=e.target.files?.[0]; if(!file)return;
