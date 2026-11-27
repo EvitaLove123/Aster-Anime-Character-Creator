@@ -117,7 +117,7 @@ else{input=document.createElement('input');input.type='range';input.min=min;inpu
 wrap.append(input);c.append(wrap)}
 }
 
-let aiMode='text', selectedImage=null, selectedImageUrl=null;\nconst ASTER_API_BASE = ''; // Deploy GPU backend and set its URL here.\nlet generatedVrmUrl=null;
+let aiMode='text', selectedImage=null, selectedImageUrl=null;\nconst ASTER_API_BASE = ''; // Set this to the deployed Aster API HTTPS URL.\nlet generatedVrmUrl=null;
 const aiPrompt=$('#aiPrompt'), promptCount=$('#promptCount');
 const draftKey='aster-ai-generator-draft-v1';
 function saveAiDraft(){
@@ -183,18 +183,18 @@ function handleAiImage(e){
 async function pollJob(jobId){
  for(let i=0;i<240;i++){
   const r=await fetch(ASTER_API_BASE+'/api/jobs/'+encodeURIComponent(jobId));if(!r.ok)throw new Error('Job status HTTP '+r.status);
-  const j=await r.json();$('#aiState').textContent='Generation: '+(j.status||'processing')+' '+(j.progress??'');
-  if(j.status==='complete'){const a=j.assets||await (await fetch(ASTER_API_BASE+'/api/jobs/'+encodeURIComponent(jobId)+'/assets')).json();generatedVrmUrl=a.vrm0x||a.vrm||a.vrmUrl;if(!generatedVrmUrl)throw new Error('Backend did not return a VRM 0.x file');$('#exportBtn').disabled=false;$('#aiState').innerHTML='<strong>Done.</strong> VRM 0.x is ready.';return}
+  const j=await r.json();$('#aiState').textContent=(j.stage||j.status||'Processing')+' · '+(j.progress??0)+'%';
+  if(j.status==='complete'){const a=j.assets||await (await fetch(ASTER_API_BASE+'/api/jobs/'+encodeURIComponent(jobId)+'/assets')).json();generatedVrmUrl=a.vrm||a.vrm0x||a.vrmUrl;if(!generatedVrmUrl)throw new Error('Backend did not return a VRM 0.x file');$('#exportBtn').disabled=false;$('#aiState').innerHTML='<strong>Done.</strong> VRM 0.x is ready.';return}
   if(j.status==='rigging_required'){$('#aiState').innerHTML='<strong>Mesh generated.</strong> Hunyuan3D produced a GLB, but humanoid rigging and VRM 0.x packaging are not yet available in this backend.';throw new Error('Mesh stage finished; humanoid rig and VRM export are pending.')}\n  if(j.status==='failed')throw new Error(j.error||'Generation failed');await new Promise(r=>setTimeout(r,2500));
  }throw new Error('Timed out waiting for generation');
 }
 $('#generateBtn').addEventListener('click',async()=>{
  const valid=aiMode==='text'?aiPrompt.value.trim().length>0:!!selectedImage;if(!valid){$('#aiState').textContent=aiMode==='text'?'Please enter a character prompt first.':'Please select a reference image first.';return}
- if(!ASTER_API_BASE){$('#aiState').innerHTML='<strong>Backend is not deployed.</strong> Nút Real Generator đã tích hợp luồng API nhưng cần GPU server; GitHub Pages không chạy Hunyuan3D trực tiếp.';return}
+ if(!ASTER_API_BASE){$('#aiState').innerHTML='<strong>Backend is not deployed.</strong> Configure the GPU server API URL; GitHub Pages cannot run the models itself.';return}
  $('#generateBtn').disabled=true;$('#exportBtn').disabled=true;generatedVrmUrl=null;
  try{const fd=new FormData();fd.append('mode',aiMode);if(aiMode==='text')fd.append('prompt',aiPrompt.value.trim());else fd.append('image',selectedImage);
  const r=await fetch(ASTER_API_BASE+'/api/image-to-3d/jobs',{method:'POST',body:fd});if(!r.ok)throw new Error('Backend HTTP '+r.status);const data=await r.json();if(!data.jobId)throw new Error('Missing jobId');await pollJob(data.jobId);
- }catch(e){$('#aiState').textContent='Error: '+e.message}finally{$('#generateBtn').disabled=false}
+ }catch(e){$('#aiState').textContent='Pipeline error: '+e.message}finally{$('#generateBtn').disabled=false}
 });
 $('#exportBtn').addEventListener('click',async()=>{if(!generatedVrmUrl)return;try{const r=await fetch(generatedVrmUrl);if(!r.ok)throw new Error('Download failed');const blob=await r.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Aster-Character.vrm';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000)}catch(e){$('#aiState').textContent='Download error: '+e.message}});
 
