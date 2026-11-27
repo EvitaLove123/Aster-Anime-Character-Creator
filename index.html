@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -38,15 +38,15 @@
  <div class="ai-title"><strong>AI Character Generator</strong><span class="soon" id="aiBadge">REAL GENERATOR</span></div>
  <p class="ai-copy">Generate a 3D character from a text prompt or reference image.</p>
  <div class="ai-modes"><button class="ai-mode active" type="button" data-ai-mode="text">✦ Text to 3D</button><button class="ai-mode" type="button" data-ai-mode="image">▧ Image to 3D</button></div>
- <div id="aiTextPane"><label class="ai-field-label" for="aiPrompt">Character prompt</label><textarea id="aiPrompt" maxlength="1024" placeholder="Ví dụ: anime fantasy girl, long silver hair, ice-blue eyes, white winter outfit..."></textarea><div class="ai-meta"><span>Up to 1,024 characters</span><span id="promptCount">0 / 1024</span></div></div>
- <div id="aiImagePane" class="hidden"><span class="ai-field-label">Ảnh tham chiếu OC</span><label class="ai-upload" for="aiImageInput" id="aiUploadLabel"><span>Tap to select PNG, JPG or WebP image<br/>Max 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp"></label><div class="ai-meta"><span id="imageMeta">No image selected</span><button type="button" class="btn hidden" id="clearImage" style="padding:3px 7px;font-size:10px">Clear image</button></div></div>
+ <div id="aiTextPane"><label class="ai-field-label" for="aiPrompt">Character prompt</label><textarea id="aiPrompt" maxlength="1024" placeholder="Example: anime fantasy girl, long silver hair, ice-blue eyes, white winter outfit..."></textarea><div class="ai-meta"><span>Up to 1,024 characters</span><span id="promptCount">0 / 1024</span></div></div>
+ <div id="aiImagePane" class="hidden"><span class="ai-field-label">Reference image</span><label class="ai-upload" for="aiImageInput" id="aiUploadLabel"><span>Tap to select PNG, JPG or WebP image<br/>Max 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp"></label><div class="ai-meta"><span id="imageMeta">No image selected</span><button type="button" class="btn hidden" id="clearImage" style="padding:3px 7px;font-size:10px">Clear image</button></div></div>
  <div class="ai-actions"><button type="button" class="btn primary" id="generateBtn">Real Generator</button></div>
  <div class="ai-state" id="aiState"><strong>Real Generator is not connected.</strong> A GPU backend is required; GitHub Pages cannot run the AI model. No API key is required in the browser.</div>
  <div class="ai-meta" style="align-items:center;margin-top:8px"><span id="draftStatus">Draft is saved locally on this device.</span><button type="button" class="btn" id="clearDraft" style="padding:4px 8px;font-size:10px">Clear draft</button></div>
 </section>
 <nav class="tabs"><button class="tab active" data-tab="face">Face</button><button class="tab" data-tab="hair">Hair</button><button class="tab" data-tab="body">Body</button><button class="tab" data-tab="outfit">Outfit</button><button class="tab" data-tab="extra">Extras</button></nav>
 <div class="controls" id="controls"></div>
-<div class="notice">Bản đầu tiên: preview 3D procedural và tùy chỉnh cơ bản. Thư viện mesh, rig humanoid, blendshape và bộ xuất VRM 0.x chưa được triển khai; nút Export is enabled only when a real exporter is ready.</div>
+<div class="notice">Prototype: procedural 3D preview and basic customization. Mesh library, humanoid rigging, blendshapes, and VRM 0.x export are not yet implemented. Export will be enabled only when a real exporter is available.</div>
 <div class="editor-actions"><button class="btn" id="newBtn">New Character</button><button class="btn primary" id="exportBtn" disabled>Download VRM 0.x</button></div>
 <div class="saved"><div class="saved-title">My Characters</div><div class="saved-list" id="savedList"><span class="saved-chip">No saved characters</span></div></div>
 </aside></main>
@@ -65,10 +65,10 @@ controls3d=new OrbitControls(camera,renderer.domElement);controls3d.target.set(0
 scene.add(new THREE.HemisphereLight(0xffffff,0xb7b0d5,2));const key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(4,7,5);scene.add(key);const fill=new THREE.DirectionalLight(0xd9d4ff,1.1);fill.position.set(-5,3,-3);scene.add(fill);
 const floor=new THREE.Mesh(new THREE.CircleGeometry(3,64),new THREE.MeshBasicMaterial({color:0xe8e5f5}));floor.rotation.x=-Math.PI/2;floor.position.y=-.04;scene.add(floor);
 const grid=new THREE.GridHelper(6,24,0xd9d4ed,0xe8e6f2);grid.position.y=-.03;scene.add(grid);
-buildAvatar();$('#renderStatus').textContent='3D preview sẵn sàng';
+buildAvatar();$('#renderStatus').textContent='3D preview ready';
 new ResizeObserver(()=>{if(!renderer)return;camera.aspect=viewport.clientWidth/viewport.clientHeight;camera.updateProjectionMatrix();renderer.setSize(viewport.clientWidth,viewport.clientHeight)}).observe(viewport);
 (function animate(){requestAnimationFrame(animate);controls3d.update();renderer.render(scene,camera)})();
-}catch(e){$('#renderStatus').textContent='Thiết bị không hỗ trợ WebGL';console.error(e)}
+}catch(e){$('#renderStatus').textContent='WebGL is not supported on this device';console.error(e)}
 function mat(color,rough=.72){return new THREE.MeshStandardMaterial({color,roughness:rough})}
 function mesh(g,m,x,y,z,sx=1,sy=1,sz=1,group=avatar){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;group.add(o);return o}
 function ball(m,x,y,z,sx,sy,sz){return mesh(new THREE.SphereGeometry(1,24,18),m,x,y,z,sx,sy,sz)}
@@ -163,7 +163,7 @@ $('#aiImageInput').addEventListener('change',e=>{
  if(file.size>20*1024*1024){alert('Image exceeds 20 MB.');e.target.value='';return}
  if(selectedImageUrl)URL.revokeObjectURL(selectedImageUrl);
  selectedImage=file; selectedImageUrl=URL.createObjectURL(file);
- const label=$('#aiUploadLabel');label.innerHTML='';const img=document.createElement('img');img.src=selectedImageUrl;img.alt='Ảnh OC đã chọn';label.append(img);
+ const label=$('#aiUploadLabel');label.innerHTML='';const img=document.createElement('img');img.src=selectedImageUrl;img.alt='Selected reference image';label.append(img);
  $('#imageMeta').textContent=file.name+' · '+(file.size/1024/1024).toFixed(1)+' MB';$('#clearImage').classList.remove('hidden');
 });
 $('#clearImage').addEventListener('click',()=>{
@@ -177,7 +177,7 @@ function handleAiImage(e){
  const file=e.target.files?.[0];if(!file)return;
  if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>20*1024*1024){alert('Please select PNG, JPG or WebP up to 20 MB.');e.target.value='';return}
  if(selectedImageUrl)URL.revokeObjectURL(selectedImageUrl);selectedImage=file;selectedImageUrl=URL.createObjectURL(file);
- const label=$('#aiUploadLabel');label.innerHTML='';const img=document.createElement('img');img.src=selectedImageUrl;img.alt='Ảnh OC đã chọn';label.append(img);
+ const label=$('#aiUploadLabel');label.innerHTML='';const img=document.createElement('img');img.src=selectedImageUrl;img.alt='Selected reference image';label.append(img);
  $('#imageMeta').textContent=file.name+' · '+(file.size/1024/1024).toFixed(1)+' MB';$('#clearImage').classList.remove('hidden');
 }
 async function pollJob(jobId){
@@ -189,8 +189,8 @@ async function pollJob(jobId){
  }throw new Error('Timed out waiting for generation');
 }
 $('#generateBtn').addEventListener('click',async()=>{
- const valid=aiMode==='text'?aiPrompt.value.trim().length>0:!!selectedImage;if(!valid){$('#aiState').textContent=aiMode==='text'?'Hãy nhập mô tả nhân vật trước.':'Hãy chọn ảnh OC trước.';return}
- if(!ASTER_API_BASE){$('#aiState').innerHTML='<strong>Backend chưa được deploy.</strong> Nút Real Generator đã tích hợp luồng API nhưng cần GPU server; GitHub Pages không chạy Hunyuan3D trực tiếp.';return}
+ const valid=aiMode==='text'?aiPrompt.value.trim().length>0:!!selectedImage;if(!valid){$('#aiState').textContent=aiMode==='text'?'Please enter a character prompt first.':'Please select a reference image first.';return}
+ if(!ASTER_API_BASE){$('#aiState').innerHTML='<strong>Backend is not deployed.</strong> Nút Real Generator đã tích hợp luồng API nhưng cần GPU server; GitHub Pages không chạy Hunyuan3D trực tiếp.';return}
  $('#generateBtn').disabled=true;$('#exportBtn').disabled=true;generatedVrmUrl=null;
  try{const fd=new FormData();fd.append('mode',aiMode);if(aiMode==='text')fd.append('prompt',aiPrompt.value.trim());else fd.append('image',selectedImage);
  const r=await fetch(ASTER_API_BASE+'/api/image-to-3d/jobs',{method:'POST',body:fd});if(!r.ok)throw new Error('Backend HTTP '+r.status);const data=await r.json();if(!data.jobId)throw new Error('Missing jobId');await pollJob(data.jobId);
