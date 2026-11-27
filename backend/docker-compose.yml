@@ -1,0 +1,18 @@
+# Aster API service; GPU model inference and rigging/export adapters are separate services.
+services:
+  aster-api:
+    build: ./backend
+    ports:
+      - "7860:7860"
+    environment:
+      ASTER_OUTPUT_DIR: /data/outputs
+      ASTER_ALLOWED_ORIGINS: "${ASTER_ALLOWED_ORIGINS:-*}"
+      HUNYUAN3D_API_URL: "${HUNYUAN3D_API_URL:-}"
+      ASTER_RIGGING_API_URL: "${ASTER_RIGGING_API_URL:-}"
+      ASTER_VRM0_EXPORT_API_URL: "${ASTER_VRM0_EXPORT_API_URL:-}"
+      ASTER_PIPELINE_TIMEOUT: "${ASTER_PIPELINE_TIMEOUT:-1800}"
+    volumes:
+      - aster-output:/data/outputs
+    restart: unless-stopped
+volumes:
+  aster-output:
