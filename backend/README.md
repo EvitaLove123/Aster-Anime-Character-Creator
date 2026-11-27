@@ -1,21 +1,25 @@
-# Aster GPU Backend (Hunyuan3D 2.1)
+# Aster GPU Backend — Hunyuan3D 2.1
 
-This is a backend scaffold for the browser UI. It is not an inference implementation and does not include model weights.
+English backend scaffold with a real API proxy to an externally hosted Hunyuan3D 2.1 server. It does not bundle model weights or provision a GPU.
 
-## Run
+## Run this API
+Install Python 3.10+, then:
+```bash
+pip install -r requirements.txt
+export HUNYUAN3D_API_URL=http://YOUR_GPU_HOST:8081/generate
+uvicorn server:app --host 0.0.0.0 --port 7860
+```
+The upstream endpoint should follow Tencent's Hunyuan3D API server contract (`POST /generate`, JSON image base64, output GLB). The API server must be started with the official Hunyuan3D-2.1 repository and its model weights on a compatible GPU.
 
-- Python 3.10+
-- Install `requirements.txt`
-- `uvicorn server:app --host 0.0.0.0 --port 7860`
+## Current pipeline status
+1. Image upload + validation — implemented here.
+2. Hunyuan3D shape/texture generation — proxy implemented, requires configured running upstream.
+3. GLB artifact storage — implemented.
+4. Humanoid auto-rig — NOT implemented.
+5. VRM 0.x metadata, humanoid bone mapping, skin weights, expressions, spring bones and custom exporter — NOT implemented.
 
-The server exposes the job contract used by the website. Until a licensed/compatible Hunyuan3D 2.1 inference adapter and GPU environment are installed, generation requests return an explicit `adapter_not_configured` failure rather than a fake model.
+Completed generation currently reports `rigging_required` and makes the GLB available at `GET /api/jobs/{jobId}/mesh`. It intentionally will not label an unrigged mesh as VRM.
 
-## API
-
-- `POST /api/image-to-3d/jobs` multipart: `mode` (`image` or `text`), `image` or `prompt`
-- `GET /api/jobs/{jobId}`
-- `GET /api/jobs/{jobId}/assets`
-
-The current frontend sends image mode or prompt mode. Model inference, texture generation, humanoid rigging, and VRM 0.x packaging must be connected as separate stages. See `docs/HUNYUAN3D_IMAGE_TO_VRM0_PIPELINE.md`.
-
-Keep this backend private or protect it with authentication and quotas before exposing it publicly. Do not store API keys in GitHub Pages.
+## Reference
+Official upstream: https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1
+See the project docs for a roadmap to humanoid rigging and VRM 0.x packaging.
