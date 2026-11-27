@@ -32,23 +32,23 @@
 <body>
 <header><div class="brand"><div class="logo">✦</div><span>Aster Anime Character Creator</span></div><div class="top-actions"><button class="btn" id="resetBtn">Reset</button><button class="btn primary" id="saveBtn">Save</button></div></header>
 <main class="layout">
-<section class="stage-card"><div class="stage-head"><strong>Character Preview</strong><span class="status">3D PROTOTYPE · VRM 0.x TARGET</span></div><div class="viewport" id="viewport"><div class="hint">Kéo để xoay · Chụm để zoom</div></div><div class="stage-foot"><span>Preview được dựng trực tiếp trong trình duyệt</span><span id="renderStatus">Đang khởi tạo…</span></div></section>
-<aside class="editor"><div class="editor-head"><h2>Character Maker</h2><p>Tạo nhân vật anime mới từ các tùy chỉnh cơ bản.</p></div>
+<section class="stage-card"><div class="stage-head"><strong>Character Preview</strong><span class="status">3D PROTOTYPE · VRM 0.x TARGET</span></div><div class="viewport" id="viewport"><div class="hint">Drag to rotate · Pinch to zoom</div></div><div class="stage-foot"><span>Preview rendered in browser</span><span id="renderStatus">Initializing…</span></div></section>
+<aside class="editor"><div class="editor-head"><h2>Character Maker</h2><p>Create a new anime character using basic customization.</p></div>
 <section class="ai-studio" aria-label="AI character generator">
  <div class="ai-title"><strong>AI Character Generator</strong><span class="soon" id="aiBadge">REAL GENERATOR</span></div>
- <p class="ai-copy">Tạo nhân vật 3D từ mô tả hoặc ảnh tham chiếu OC.</p>
+ <p class="ai-copy">Generate a 3D character from a text prompt or reference image.</p>
  <div class="ai-modes"><button class="ai-mode active" type="button" data-ai-mode="text">✦ Text to 3D</button><button class="ai-mode" type="button" data-ai-mode="image">▧ Image to 3D</button></div>
- <div id="aiTextPane"><label class="ai-field-label" for="aiPrompt">Mô tả nhân vật</label><textarea id="aiPrompt" maxlength="1024" placeholder="Ví dụ: anime fantasy girl, long silver hair, ice-blue eyes, white winter outfit..."></textarea><div class="ai-meta"><span>Tối đa 1.024 ký tự</span><span id="promptCount">0 / 1024</span></div></div>
- <div id="aiImagePane" class="hidden"><span class="ai-field-label">Ảnh tham chiếu OC</span><label class="ai-upload" for="aiImageInput" id="aiUploadLabel"><span>Chạm để chọn ảnh PNG, JPG hoặc WebP<br/>Tối đa 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp"></label><div class="ai-meta"><span id="imageMeta">Chưa chọn ảnh</span><button type="button" class="btn hidden" id="clearImage" style="padding:3px 7px;font-size:10px">Xóa ảnh</button></div></div>
+ <div id="aiTextPane"><label class="ai-field-label" for="aiPrompt">Character prompt</label><textarea id="aiPrompt" maxlength="1024" placeholder="Ví dụ: anime fantasy girl, long silver hair, ice-blue eyes, white winter outfit..."></textarea><div class="ai-meta"><span>Up to 1,024 characters</span><span id="promptCount">0 / 1024</span></div></div>
+ <div id="aiImagePane" class="hidden"><span class="ai-field-label">Ảnh tham chiếu OC</span><label class="ai-upload" for="aiImageInput" id="aiUploadLabel"><span>Tap to select PNG, JPG or WebP image<br/>Max 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp"></label><div class="ai-meta"><span id="imageMeta">No image selected</span><button type="button" class="btn hidden" id="clearImage" style="padding:3px 7px;font-size:10px">Clear image</button></div></div>
  <div class="ai-actions"><button type="button" class="btn primary" id="generateBtn">Real Generator</button></div>
- <div class="ai-state" id="aiState"><strong>Real Generator chưa kết nối.</strong> Cần dịch vụ GPU backend; Pages không chạy model AI trực tiếp. Không cần nhập API key.</div>
- <div class="ai-meta" style="align-items:center;margin-top:8px"><span id="draftStatus">Bản nháp sẽ tự lưu trên thiết bị.</span><button type="button" class="btn" id="clearDraft" style="padding:4px 8px;font-size:10px">Xóa bản nháp</button></div>
+ <div class="ai-state" id="aiState"><strong>Real Generator is not connected.</strong> A GPU backend is required; GitHub Pages cannot run the AI model. No API key is required in the browser.</div>
+ <div class="ai-meta" style="align-items:center;margin-top:8px"><span id="draftStatus">Draft is saved locally on this device.</span><button type="button" class="btn" id="clearDraft" style="padding:4px 8px;font-size:10px">Clear draft</button></div>
 </section>
-<nav class="tabs"><button class="tab active" data-tab="face">Face</button><button class="tab" data-tab="hair">Hair</button><button class="tab" data-tab="body">Body</button><button class="tab" data-tab="outfit">Outfit</button><button class="tab" data-tab="extra">Extra</button></nav>
+<nav class="tabs"><button class="tab active" data-tab="face">Face</button><button class="tab" data-tab="hair">Hair</button><button class="tab" data-tab="body">Body</button><button class="tab" data-tab="outfit">Outfit</button><button class="tab" data-tab="extra">Extras</button></nav>
 <div class="controls" id="controls"></div>
-<div class="notice">Bản đầu tiên: preview 3D procedural và tùy chỉnh cơ bản. Thư viện mesh, rig humanoid, blendshape và bộ xuất VRM 0.x chưa được triển khai; nút Export sẽ chỉ mở khi exporter thật sẵn sàng.</div>
+<div class="notice">Bản đầu tiên: preview 3D procedural và tùy chỉnh cơ bản. Thư viện mesh, rig humanoid, blendshape và bộ xuất VRM 0.x chưa được triển khai; nút Export is enabled only when a real exporter is ready.</div>
 <div class="editor-actions"><button class="btn" id="newBtn">New Character</button><button class="btn primary" id="exportBtn" disabled>Download VRM 0.x</button></div>
-<div class="saved"><div class="saved-title">My Characters</div><div class="saved-list" id="savedList"><span class="saved-chip">Chưa có nhân vật đã lưu</span></div></div>
+<div class="saved"><div class="saved-title">My Characters</div><div class="saved-list" id="savedList"><span class="saved-chip">No saved characters</span></div></div>
 </aside></main>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -123,8 +123,8 @@ const draftKey='aster-ai-generator-draft-v1';
 function saveAiDraft(){
  try{
   localStorage.setItem(draftKey,JSON.stringify({prompt:aiPrompt.value,mode:aiMode,updatedAt:Date.now()}));
-  $('#draftStatus').textContent='Đã tự lưu bản nháp trên thiết bị.';
- }catch(e){$('#draftStatus').textContent='Không thể lưu bản nháp: bộ nhớ trình duyệt không khả dụng.'}
+  $('#draftStatus').textContent='Draft saved locally.';
+ }catch(e){$('#draftStatus').textContent='Draft could not be saved: browser storage unavailable.'}
 }
 function restoreAiDraft(){
  try{
@@ -136,8 +136,8 @@ function restoreAiDraft(){
   $('#aiTextPane').classList.toggle('hidden',aiMode!=='text');
   $('#aiImagePane').classList.toggle('hidden',aiMode!=='image');
   $('#generateBtn').textContent=aiMode==='text'?'Generate 3D':'Generate from Image';
-  $('#draftStatus').textContent='Đã khôi phục bản nháp gần nhất. Ảnh cần chọn lại sau khi tải lại trang.';
- }catch(e){$('#draftStatus').textContent='Không đọc được bản nháp cũ.'}
+  $('#draftStatus').textContent='Restored the last draft. Images must be reselected after reload.';
+ }catch(e){$('#draftStatus').textContent='Could not read previous draft.'}
 }
 restoreAiDraft();
 promptCount.textContent=aiPrompt.value.length+' / 1024';
@@ -147,7 +147,7 @@ $('#clearDraft').addEventListener('click',()=>{
  document.querySelectorAll('[data-ai-mode]').forEach(x=>x.classList.toggle('active',x.dataset.aiMode==='text'));
  $('#aiTextPane').classList.remove('hidden');$('#aiImagePane').classList.add('hidden');
  $('#generateBtn').textContent='Generate 3D';promptCount.textContent='0 / 1024';
- $('#draftStatus').textContent='Bản nháp đã được xóa.';
+ $('#draftStatus').textContent='Draft cleared.';
 });
 document.querySelectorAll('[data-ai-mode]').forEach(btn=>btn.addEventListener('click',()=>{
  aiMode=btn.dataset.aiMode;
@@ -159,8 +159,8 @@ document.querySelectorAll('[data-ai-mode]').forEach(btn=>btn.addEventListener('c
 }));
 $('#aiImageInput').addEventListener('change',e=>{
  const file=e.target.files?.[0]; if(!file)return;
- if(!['image/png','image/jpeg','image/webp'].includes(file.type)){alert('Chỉ hỗ trợ PNG, JPG hoặc WebP.');e.target.value='';return}
- if(file.size>20*1024*1024){alert('Ảnh vượt quá giới hạn 20 MB.');e.target.value='';return}
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)){alert('Only PNG, JPG or WebP are supported.');e.target.value='';return}
+ if(file.size>20*1024*1024){alert('Image exceeds 20 MB.');e.target.value='';return}
  if(selectedImageUrl)URL.revokeObjectURL(selectedImageUrl);
  selectedImage=file; selectedImageUrl=URL.createObjectURL(file);
  const label=$('#aiUploadLabel');label.innerHTML='';const img=document.createElement('img');img.src=selectedImageUrl;img.alt='Ảnh OC đã chọn';label.append(img);
@@ -168,14 +168,14 @@ $('#aiImageInput').addEventListener('change',e=>{
 });
 $('#clearImage').addEventListener('click',()=>{
  selectedImage=null;$('#aiImageInput').value='';if(selectedImageUrl)URL.revokeObjectURL(selectedImageUrl);selectedImageUrl=null;
- $('#aiUploadLabel').innerHTML='<span>Chạm để chọn ảnh PNG, JPG hoặc WebP<br/>Tối đa 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp">';
+ $('#aiUploadLabel').innerHTML='<span>Tap to select PNG, JPG or WebP image<br/>Max 20 MB</span><input id="aiImageInput" type="file" accept="image/png,image/jpeg,image/webp">';
  // Rebind the replacement input so image selection remains usable.
  $('#aiImageInput').addEventListener('change',e=>handleAiImage(e));
- $('#imageMeta').textContent='Chưa chọn ảnh';$('#clearImage').classList.add('hidden');
+ $('#imageMeta').textContent='No image selected';$('#clearImage').classList.add('hidden');
 });
 function handleAiImage(e){
  const file=e.target.files?.[0];if(!file)return;
- if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>20*1024*1024){alert('Vui lòng chọn PNG, JPG hoặc WebP tối đa 20 MB.');e.target.value='';return}
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>20*1024*1024){alert('Please select PNG, JPG or WebP up to 20 MB.');e.target.value='';return}
  if(selectedImageUrl)URL.revokeObjectURL(selectedImageUrl);selectedImage=file;selectedImageUrl=URL.createObjectURL(file);
  const label=$('#aiUploadLabel');label.innerHTML='';const img=document.createElement('img');img.src=selectedImageUrl;img.alt='Ảnh OC đã chọn';label.append(img);
  $('#imageMeta').textContent=file.name+' · '+(file.size/1024/1024).toFixed(1)+' MB';$('#clearImage').classList.remove('hidden');
@@ -201,10 +201,10 @@ $('#exportBtn').addEventListener('click',async()=>{if(!generatedVrmUrl)return;tr
 
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');active=b.dataset.tab;renderControls()});
 function reset(){state={...defaults};buildAvatar();renderControls()}
-$('#resetBtn').onclick=reset;$('#newBtn').onclick=()=>{reset();$('#renderStatus').textContent='Nhân vật mới'};
+$('#resetBtn').onclick=reset;$('#newBtn').onclick=()=>{reset();$('#renderStatus').textContent='New character'};
 function getSaved(){try{return JSON.parse(localStorage.getItem('aster-characters')||'[]')}catch{return []}}
-function showSaved(){const list=$('#savedList'),items=getSaved();list.innerHTML='';if(!items.length){list.innerHTML='<span class="saved-chip">Chưa có nhân vật đã lưu</span>';return}items.forEach((it,i)=>{const b=document.createElement('button');b.className='saved-chip';b.textContent=it.name;b.onclick=()=>{state={...defaults,...it.state};buildAvatar();renderControls();$('#renderStatus').textContent='Đã tải '+it.name};list.append(b)})}
-$('#saveBtn').onclick=()=>{const name=prompt('Đặt tên nhân vật:','My Anime Character');if(!name)return;const items=getSaved();items.push({name:name.trim(),state:{...state}});try{localStorage.setItem('aster-characters',JSON.stringify(items));showSaved();$('#renderStatus').textContent='Đã lưu trên thiết bị'}catch(e){alert('Không thể lưu. Bộ nhớ trình duyệt có thể đã đầy.')}};
+function showSaved(){const list=$('#savedList'),items=getSaved();list.innerHTML='';if(!items.length){list.innerHTML='<span class="saved-chip">No saved characters</span>';return}items.forEach((it,i)=>{const b=document.createElement('button');b.className='saved-chip';b.textContent=it.name;b.onclick=()=>{state={...defaults,...it.state};buildAvatar();renderControls();$('#renderStatus').textContent='Loaded '+it.name};list.append(b)})}
+$('#saveBtn').onclick=()=>{const name=prompt('Character name:','My Anime Character');if(!name)return;const items=getSaved();items.push({name:name.trim(),state:{...state}});try{localStorage.setItem('aster-characters',JSON.stringify(items));showSaved();$('#renderStatus').textContent='Saved locally'}catch(e){alert('Save failed. Browser storage may be full.')}};
 renderControls();showSaved();
 </script>
 </body></html>
